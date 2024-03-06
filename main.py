@@ -35,7 +35,7 @@ JSONStructure = Union[JSONArray, JSONObject]
 
 @app.get('/')# GET # allow all origins all methods.
 async def index():
-    return "Welcome to CaesarAI Template. Hello"
+    return "BTD Connect API."
 @app.post('/api/v1/signupapi') # POST
 async def signup(data: AuthModel):
     try:
