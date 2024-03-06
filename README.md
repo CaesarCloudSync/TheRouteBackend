@@ -1,1 +1,3 @@
-# CaesarAI Cloud Run FastAPI Template
+# BTDConnect Backend
+
+The backend that governs BTDConnect
