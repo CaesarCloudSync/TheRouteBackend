@@ -20,14 +20,17 @@ class CaesarJWT:
         decoded_token = jwt.decode(token, self.JWT_SECRET, algorithms=self.JWT_ALGORITHM)
         # this is often used on the client side to encode the user's email address or other properties
         return decoded_token
-    def provide_access_token(self,login_details):
+    def provide_access_token(self,login_details,student=0):
         condition = f"email = '{login_details['email']}'"
-        email_exists = self.caesarcrud.check_exists(("*"),"usersconnect",condition=condition)
+        if student == 0:
+            email_exists = self.caesarcrud.check_exists(("*"),"users",condition=condition)
+        elif student == 1:
+            email_exists = self.caesarcrud.check_exists(("*"),"studentsubscriptions",condition=condition)
         if email_exists:
             encrypted_password =  hashlib.sha256(login_details["password"].encode('utf-8')).hexdigest()
-            user_data = self.caesarcrud.get_data(("uuid","email","password"),"usersconnect",condition=condition)[0]
-            if user_data["password"] == encrypted_password:
-                access_token = self.secure_encode({"uuid":user_data["uuid"]}) #create_access_token(identity=email_exists["email"])
+            email_data = self.caesarcrud.get_data(("email","password"),"users",condition=condition)[0]
+            if email_data["password"] == encrypted_password:
+                access_token = self.secure_encode({"email":email_data["email"]}) #create_access_token(identity=email_exists["email"])
                 return access_token
             else:
                 return "Wrong password"

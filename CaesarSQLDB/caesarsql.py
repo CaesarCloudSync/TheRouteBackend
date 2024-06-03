@@ -1,53 +1,29 @@
-from dotenv import load_dotenv
-load_dotenv()
 import time
 import json
-from typing import Any, Callable, Union
-#import mysql.connector
+import psycopg
 import subprocess
-import os
-import MySQLdb
-import argparse
-import base64
+from urllib.parse import urlparse
+from typing import Any, Callable, Union
+from psycopg import ProgrammingError
 class CaesarSQL:
-    def __init__(self,host:str='localhost',user:str='root',password:str="temp123") -> None:
+    def __init__(self) -> None:
         # Makes SQL connection to remote server.
-        self.dbdata =  {"host": base64.b64decode(os.getenv("HOST")).decode(),
-            "user":base64.b64decode(os.getenv("USERNAMESQL")).decode(),
-            "passwd": base64.b64decode(os.getenv("PASSWORD")).decode(),
-            "db": base64.b64decode(os.getenv("DATABASE")).decode(),
-            "autocommit" : True,
-            "ssl_mode" : "VERIFY_IDENTITY",
-            "ssl"      : {
-                "ca": "/etc/ssl/certs/ca-certificates.crt"
-            },}
-        self.connection = MySQLdb.connect(
-            host= self.dbdata["host"],
-            user=self.dbdata["user"],
-            passwd= self.dbdata["passwd"],
-            db= self.dbdata["db"],
-            autocommit = self.dbdata["autocommit"],
-            ssl_mode = self.dbdata["ssl_mode"],
-            ssl      = self.dbdata["ssl"]
-        )# "/etc/ssl/cert.pem" 
 
+        conStr = 'postgres://postgres.nmcqfzjggtposlhwkawr:BTDTechConnect@aws-0-eu-central-1.pooler.supabase.com:6543/postgres'
+        p = urlparse(conStr)
 
+        pg_connection_dict = {
+            'dbname': p.scheme,
+            'user': p.username,
+            'password': p.password,
+            'port': p.port,
+            'host': p.hostname,
+            "autocommit" : True
 
-        #self.connection =  mysql.connector.connect(
-        #host=host,
-        #user=user,
-        #password = password,
-        #)
-    def reset_connection(self):
-        self.connection = MySQLdb.connect(
-                host= self.dbdata["host"],
-                user=self.dbdata["user"],
-                passwd= self.dbdata["passwd"],
-                db= self.dbdata["db"],
-                autocommit = self.dbdata["autocommit"],
-                ssl_mode = self.dbdata["ssl_mode"],
-                ssl      = self.dbdata["ssl"]
-            )
+        }
+
+        self.connection = psycopg.connect(**pg_connection_dict)
+
 
     def check_exists(self,result :Any):
         # Checks if an entity exists from an SQL Command.
@@ -103,33 +79,38 @@ class CaesarSQL:
             #if self.connection.is_connected():
             #    db_Info = self.connection.get_server_info()
             #    print("Connected to MySQL Server version ", db_Info)
-        if sqlcommand == None and filename == None:
-            print("Please input an SQL command or SQL filename.")
-        else:
-            if filename != None:
-               with open(filename) as f:
-                   sqlcommand = f.read()
-            
-            with self.connection.cursor() as cursor:
-                #print(datatuple)
-                cursor.execute(sqlcommand,datatuple)
-
-                result = cursor.fetchall()
-                    
-                
-                if result_function != None:
-                    new_result = result_function(result)
-                elif result_function == None:
-                    new_result = None
-
-                #self.connection.commit()
-            if verbose == 1:
-                print("SQL command executed.")
-                return new_result
+        try:
+            if sqlcommand == None and filename == None:
+                print("Please input an SQL command or SQL filename.")
             else:
-                return new_result
+                if filename != None:
+                    with open(filename) as f:
+                        sqlcommand = f.read()
+                
+                with self.connection.cursor() as cursor:
+                    #print(datatuple)
+                    cursor.execute(sqlcommand,datatuple)
 
+                    result = cursor.fetchall()
+                        
+                    
+                    if result_function != None:
+                        new_result = result_function(result)
+                    elif result_function == None:
+                        new_result = None
 
+                    #self.connection.commit()
+                if verbose == 1:
+                    print("SQL command executed.")
+                    return new_result
+                else:
+                    return new_result
+        except ProgrammingError as pex:
+            print(pex)
+            if ("the last operation didn't produce a result" in str(pex)):
+                return True
+            else:
+                raise 
     def run_command_generator(self,sqlcommand : str = None,arraysize:int =1000, datatuple : tuple =None,filename :str = None,verbose:int=1):
         # Executes SQL Command or takes SQL file as input.
         #if verbose == 1:
@@ -145,7 +126,6 @@ class CaesarSQL:
             try:
                 with self.connection.cursor() as cursor:
                     #print(datatuple)
-                    cursor.execute('set max_allowed_packet=67108864')
                     cursor.execute(sqlcommand,datatuple)
                     if verbose == 1:
                         print("SQL command executed.")
@@ -194,27 +174,6 @@ class CaesarSQL:
         time.sleep(2)
         return stdout,stderr
 
-def test():
-    if __name__ == "__main__":
-        #CaesarSQL.start_docker_db()
-        caesarsql = CaesarSQL()
-        #val = caesarsql.run_command("DROP TABLE customers",result_function=caesarsql.fetch)
-        parser = argparse.ArgumentParser(
-                        prog='ProgramName',
-                        description='What the program does',
-                        epilog='Text at the bottom of help')
-        parser.add_argument('sqlcommand',
-                        help='SQL Command.')
-
-        args = parser.parse_args()
-        result = caesarsql.run_command(args.sqlcommand,caesarsql.fetch)
-        print(result)
-if __name__ == "__main__":
-    caesarsql = CaesarSQL()
-    resultgen = caesarsql.run_command_generator("SELECT * FROM test WHERE firstname = 'Amhari';",arraysize=1000)
-    print(resultgen)
-    #for result in resultgen:
-     #   print(result)
 
 
 
