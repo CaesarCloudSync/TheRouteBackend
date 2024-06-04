@@ -3,7 +3,7 @@ import requests
 import unittest
 import sys
 
-uri = "http://127.0.0.1:8080" #"https://blacktechdivisionreward-hrjw5cc7pa-uc.a.run.app"
+uri = "http://127.0.0.1:8080" #"https://btdtechconnectbe-hrjw5cc7pa-uc.a.run.app"
 
 class BTDConnectUnittest(unittest.TestCase):
     def test_signup(self):
