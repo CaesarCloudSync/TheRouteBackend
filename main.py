@@ -12,7 +12,7 @@ from fastapi import WebSocket,WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from CaesarJWT.caesarjwt import CaesarJWT
 from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
-from Models.AuthModels import AuthModel
+from Models.AuthModels import SignupAuthModel,LoginAuthModel
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(
@@ -37,7 +37,7 @@ JSONStructure = Union[JSONArray, JSONObject]
 async def index():
     return "BTD Connect API."
 @app.post('/api/v1/signupapi') # POST
-async def signup(data: AuthModel):
+async def signup(data: SignupAuthModel):
     try:
         data = data.model_dump()
         hashed = hashlib.sha256(data["password"].encode('utf-8')).hexdigest()
@@ -61,7 +61,7 @@ async def signup(data: AuthModel):
         print(error_detected)
         return error_detected
 @app.post('/api/v1/loginapi') # POST
-async def login(login_details: AuthModel): # ,authorization: str = Header(None)
+async def login(login_details: LoginAuthModel): # ,authorization: str = Header(None)
     # Login API
     try:
 

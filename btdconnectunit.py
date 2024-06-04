@@ -11,7 +11,7 @@ class BTDConnectUnittest(unittest.TestCase):
 
         print(response.json())
     def test_login(self):
-        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"test@example.com","password":"test"})
+        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
         print(response.json())
     def test_get_info(self):
         response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"test@example.com","password":"test"})
