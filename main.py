@@ -71,6 +71,7 @@ async def login(login_details: LoginAuthModel): # ,authorization: str = Header(N
         condition = f"email = '{login_details['email']}'"
         email_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
         if email_exists:
+         
             access_token = btdjwt.provide_access_token(login_details)
             if access_token == "Wrong password":
                 return {"message": "The username or password is incorrect."}
@@ -80,21 +81,7 @@ async def login(login_details: LoginAuthModel): # ,authorization: str = Header(N
             return {"message": "The username or password is incorrect."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
-@app.post('/api/v1/storeuserinterests') # POST
-async def storeinterests(industry_interests: IndustryInterestsModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
-    # Login API
-    try:
-        industry_interests = industry_interests.model_dump()
-        login_details = dict(login_details)
-        #print(login_details)
-        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
-        condition = f"uuid = '{current_user}'"
-        user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
-        if user_exists:
-            pass
-    except Exception as ex:
-        return {"error": f"{type(ex)} {str(ex)}"}
-    
+
 @app.get('/api/v1/getuserinfo') # POST
 async def getuserinfo(authorization: str = Header(None)): # ,authorization: str = Header(None)
     try:
@@ -108,7 +95,32 @@ async def getuserinfo(authorization: str = Header(None)): # ,authorization: str 
             return {"error":"user does not exist."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
+# Store interests
+@app.post('/api/v1/storeuserinterests') # POST
+async def storeinterests(industry_interests: IndustryInterestsModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        industry_interests = industry_interests.model_dump()
+        industry = industry_interests["industry"]
+        career = industry_interests["career"]
+        studypref = industry_interests["studypref"]
+        studydays = industry_interests["studydays"]
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        condition = f"uuid = '{current_user}'"
+        user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
+        print(current_user)
+        if user_exists:
+            user_interests_exists = caesarcrud.check_exists(("*"),"users_interests",condition=f"uuid = '{current_user}'")
+            if user_interests_exists:
+                return {"message":"user interest already exists"}
+            else:
+                career_uuid,industry_uuid,studypref_uuid,studyday_uuid= caesarcrud.caesarsql.run_command(f"SELECT careers.career_uuid,industrys.industry_uuid,studypreferences.studypref_uuid,studydays.studyday_uuid FROM careers,industrys,studypreferences,studydays WHERE careers.career = '{career}' AND industrys.industry = '{industry}' AND studypreferences.studypref = '{studypref}' AND studydays.studyday = '{studydays}';",result_function=caesarcrud.caesarsql.fetch)[0]
+                caesarcrud.caesarsql.run_command(f"INSERT INTO users_interests (uuid,career_uuid,industry_uuid,studypref_uuid,studyday_uuid) VALUES ('{current_user}','{career_uuid}','{industry_uuid}','{studypref_uuid}','{studyday_uuid}');")
+                return {'message':'user interests stored.'}
 
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
+    
 # Storing Interest entities
 @app.post('/api/v1/storeindustryentity') # POST
 async def storeindustryentity(industry_model: IndustryModel): # ,authorization: str = Header(None)

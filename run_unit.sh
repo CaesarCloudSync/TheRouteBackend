@@ -1,6 +1,6 @@
 if [[ $1 == "" ]]
 then
-  python -m unittest btdconnectunit.PrepopulateData
+  python -m unittest btdconnectunit.BTDConnectUnittest
 else
-  python -m unittest btdconnectunit.PrepopulateData.$1
+  python -m unittest btdconnectunit.BTDConnectUnittest.$1
 fi

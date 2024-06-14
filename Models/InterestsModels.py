@@ -4,6 +4,7 @@ class IndustryInterestsModel(BaseModel):
     industry:str
     career:str
     studypref:str
+    studydays:str
 
 class IndustryModel(BaseModel):
     industry:str

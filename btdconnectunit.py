@@ -20,6 +20,14 @@ class BTDConnectUnittest(unittest.TestCase):
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(f"{uri}/api/v1/getuserinfo",headers=headers)
         print(response.json())
+    def test_store_industry_intersts(self):
+        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
+        print(response.json())
+        access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.post(f"{uri}/api/v1/storeuserinterests",json={"industry":"tech","career":"software_developer","studypref":"online","studydays":"3_days_week"},headers=headers)
+        print(response.json())
+
 class PrepopulateData(unittest.TestCase):
     def test_insert_industrys_careers_studydays_studyprefs(self):
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"tech","label":"Technology"})
