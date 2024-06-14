@@ -17,19 +17,23 @@ class CaesarCreateTables:
                 );
             CREATE TABLE IF NOT EXISTS industrys (
                 industry_uuid UUID NOT NULL PRIMARY KEY, 
-                industry VARCHAR(255) NOT NULL
+                industry VARCHAR(255) NOT NULL,
+                label VARCHAR(255) NOT NULL
                 );
             CREATE TABLE IF NOT EXISTS careers (
                 career_uuid UUID NOT NULL PRIMARY KEY, 
-                career VARCHAR(255) NOT NULL
+                career VARCHAR(255) NOT NULL,
+                label VARCHAR(255) NOT NULL
                 );
             CREATE TABLE IF NOT EXISTS studypreferences (
                 studypref_uuid UUID NOT NULL PRIMARY KEY, 
-                studypref VARCHAR(255) NOT NULL
+                studypref VARCHAR(255) NOT NULL,
+                label VARCHAR(255) NOT NULL
                 );
             CREATE TABLE IF NOT EXISTS studydays (
                 studyday_uuid UUID NOT NULL PRIMARY KEY, 
-                studyday VARCHAR(255) NOT NULL
+                studyday VARCHAR(255) NOT NULL,
+                label VARCHAR(255) NOT NULL                             
                 );
                                              
             CREATE TABLE IF NOT EXISTS users_interests (

@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from CaesarJWT.caesarjwt import CaesarJWT
 from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
 from Models.AuthModels import SignupAuthModel,LoginAuthModel
+from Models.InterestsModels import IndustryInterestsModel,IndustryModel,CareerModel,StudyDaysModel,StudyPrefModel
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(
@@ -79,6 +80,21 @@ async def login(login_details: LoginAuthModel): # ,authorization: str = Header(N
             return {"message": "The username or password is incorrect."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storeuserinterests') # POST
+async def storeinterests(industry_interests: IndustryInterestsModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        industry_interests = industry_interests.model_dump()
+        login_details = dict(login_details)
+        #print(login_details)
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        condition = f"uuid = '{current_user}'"
+        user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
+        if user_exists:
+            pass
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
+    
 @app.get('/api/v1/getuserinfo') # POST
 async def getuserinfo(authorization: str = Header(None)): # ,authorization: str = Header(None)
     try:
@@ -93,8 +109,77 @@ async def getuserinfo(authorization: str = Header(None)): # ,authorization: str 
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
 
-#TODO Olisa/Amari - Create, Retrieve, Update and Delete accounts.
-
+# Storing Interest entities
+@app.post('/api/v1/storeindustryentity') # POST
+async def storeindustryentity(industry_model: IndustryModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        industry_model = industry_model.model_dump()
+        industry = industry_model['industry']
+        label = industry_model["label"]
+        condition = f"industry = '{industry}'"
+        industry_exists = caesarcrud.check_exists(("*"),"industrys",condition=condition)
+        if industry_exists:
+            return {"message":"industry already exists."}
+        else:
+            industry_uuid = str(uuid.uuid4())
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO industrys (industry_uuid,industry,label) VALUES ('{industry_uuid}','{industry}','{label}');")
+            return {"message":"industry was inserted."}
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storecareerentity') # POST
+async def storecareerentity(career_model: CareerModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        career_model = career_model.model_dump()
+        career = career_model['career']
+        label = career_model["label"]
+        condition = f"career = '{career}'"
+        career_exists = caesarcrud.check_exists(("*"),"careers",condition=condition)
+        if career_exists:
+            return {"message":"career already exists."}
+        else:
+            career_uuid = str(uuid.uuid4())
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO careers (career_uuid,career,label) VALUES ('{career_uuid}','{career}','{label}');")
+            return {"message":"career was inserted."}
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storestudyprefentity') # POST
+async def storestudyprefentity(studyprefs_model: StudyPrefModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        studyprefs_model = studyprefs_model.model_dump()
+        studyprefs = studyprefs_model['studypref']
+        label = studyprefs_model["label"]
+        condition = f"studypref = '{studyprefs}'"
+        studyprefs_exists = caesarcrud.check_exists(("*"),"studypreferences",condition=condition)
+        if studyprefs_exists:
+            return {"message":"studypref already exists."}
+        else:
+            studyprefs_uuid = str(uuid.uuid4())
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO studypreferences (studypref_uuid,studypref,label) VALUES ('{studyprefs_uuid}','{studyprefs}','{label}');")
+            return {"message":"studypref was inserted."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storestudydayentity') # POST
+async def storestudydayentity(studydays_model: StudyDaysModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        studydays_model = studydays_model.model_dump()
+        studydays = studydays_model['studydays']
+        label = studydays_model["label"]
+        condition = f"studyday = '{studydays}'"
+        studydays_exists = caesarcrud.check_exists(("*"),"studydays",condition=condition)
+        if studydays_exists:
+            return {"message":"studyday already exists."}
+        else:
+            studydays_uuid = str(uuid.uuid4())
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO studydays (studyday_uuid,studyday,label) VALUES ('{studydays_uuid}','{studydays}','{label}');")
+            return {"message":"studyday was inserted."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
 if __name__ == "__main__":
     uvicorn.run("main:app",port=8080,log_level="info",host="0.0.0.0")
     #uvicorn.run()
