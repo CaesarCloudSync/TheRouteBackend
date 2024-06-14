@@ -12,6 +12,7 @@ class IndustryModel(BaseModel):
 class CareerModel(BaseModel):
     career:str
     label:str
+    industry:str
 class StudyPrefModel(BaseModel):
     studypref:str
     label:str

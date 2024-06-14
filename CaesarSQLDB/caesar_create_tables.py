@@ -18,12 +18,14 @@ class CaesarCreateTables:
             CREATE TABLE IF NOT EXISTS industrys (
                 industry_uuid UUID NOT NULL PRIMARY KEY, 
                 industry VARCHAR(255) NOT NULL,
-                label VARCHAR(255) NOT NULL
+                label VARCHAR(255) NOT NULL,
+                CONSTRAINT order_date_unique UNIQUE (industry)
                 );
             CREATE TABLE IF NOT EXISTS careers (
                 career_uuid UUID NOT NULL PRIMARY KEY, 
                 career VARCHAR(255) NOT NULL,
-                label VARCHAR(255) NOT NULL
+                label VARCHAR(255) NOT NULL,
+                industry VARCHAR(255) REFERENCES industrys(industry) NOT NULL
                 );
             CREATE TABLE IF NOT EXISTS studypreferences (
                 studypref_uuid UUID NOT NULL PRIMARY KEY, 

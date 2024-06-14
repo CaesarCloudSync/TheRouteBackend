@@ -30,14 +30,21 @@ class BTDConnectUnittest(unittest.TestCase):
     def test_get_industry_choices(self):
         response = requests.get(f"{uri}/api/v1/getindustrychoices")
         print(response.json())
-
-class PrepopulateData(unittest.TestCase):
     def test_insert_industrys_careers_studydays_studyprefs(self):
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"tech","label":"Technology"})
+        response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"gaming","label":"Gaming"})
 
 
         print(response.json())
-        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"software_developer","label":"Software Developer"})
+        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"software_developer","label":"Software Developer","industry":"tech"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"software_designer","label":"Software Designer","industry":"tech"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"game_developer","label":"Game Developer","industry":"gaming"})
         
 
         print(response.json())
@@ -52,7 +59,6 @@ class PrepopulateData(unittest.TestCase):
         
 
         print(response.json())
-
 
 
 

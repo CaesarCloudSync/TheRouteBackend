@@ -127,11 +127,13 @@ async def getindustrychoices():
         industrys = []
         studyprefs = []
         studydays = []
-        industry_choices_lists = caesarcrud.caesarsql.run_command(f"SELECT careers.career,careers.label,industrys.industry,industrys.label,studypreferences.studypref,studypreferences.label,studydays.studyday,studydays.label FROM careers,industrys,studypreferences,studydays;",result_function=caesarcrud.caesarsql.fetch)
+        # Better error checking is needed here for data that doesn't exist
+
+        industry_choices_lists = caesarcrud.caesarsql.run_command(f"SELECT careers.career,careers.label,industrys.industry,industrys.label,studypreferences.studypref,studypreferences.label,studydays.studyday,studydays.label FROM careers,industrys,studypreferences,studydays WHERE careers.industry = industrys.industry;",result_function=caesarcrud.caesarsql.fetch)
         for choice  in industry_choices_lists:
             career_value = choice[0]
             career_label = choice[1]
-            
+
             industry_value = choice[2]
             industry_label = choice[3]
                         
@@ -141,7 +143,7 @@ async def getindustrychoices():
             studydays_value = choice[6]
             studydays_label = choice[7]
             
-            careers.append({"value":career_value,"label":career_label})
+            careers.append({"value":career_value,"label":career_label,"industry":industry_value})
             industrys.append({"value":industry_value,"label":industry_label})
             studyprefs.append({"value":studypref_value,"label":studypref_label})
             studydays.append({"value":studydays_value,"label":studydays_label})
@@ -173,13 +175,15 @@ async def storecareerentity(career_model: CareerModel): # ,authorization: str = 
         career_model = career_model.model_dump()
         career = career_model['career']
         label = career_model["label"]
+        industry = career_model["industry"]
         condition = f"career = '{career}'"
         career_exists = caesarcrud.check_exists(("*"),"careers",condition=condition)
         if career_exists:
             return {"message":"career already exists."}
         else:
             career_uuid = str(uuid.uuid4())
-            res = caesarcrud.caesarsql.run_command(f"INSERT INTO careers (career_uuid,career,label) VALUES ('{career_uuid}','{career}','{label}');")
+
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO careers (career_uuid,career,label,industry) VALUES ('{career_uuid}','{career}','{label}','{industry}');")
             return {"message":"career was inserted."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
