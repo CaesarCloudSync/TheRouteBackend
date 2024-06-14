@@ -27,6 +27,9 @@ class BTDConnectUnittest(unittest.TestCase):
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.post(f"{uri}/api/v1/storeuserinterests",json={"industry":"tech","career":"software_developer","studypref":"online","studydays":"3_days_week"},headers=headers)
         print(response.json())
+    def test_get_industry_choices(self):
+        response = requests.get(f"{uri}/api/v1/getindustrychoices")
+        print(response.json())
 
 class PrepopulateData(unittest.TestCase):
     def test_insert_industrys_careers_studydays_studyprefs(self):

@@ -120,7 +120,34 @@ async def storeinterests(industry_interests: IndustryInterestsModel,authorizatio
 
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
-    
+@app.get("/api/v1/getindustrychoices")
+async def getindustrychoices():
+    try:
+        careers = []
+        industrys = []
+        studyprefs = []
+        studydays = []
+        industry_choices_lists = caesarcrud.caesarsql.run_command(f"SELECT careers.career,careers.label,industrys.industry,industrys.label,studypreferences.studypref,studypreferences.label,studydays.studyday,studydays.label FROM careers,industrys,studypreferences,studydays;",result_function=caesarcrud.caesarsql.fetch)
+        for choice  in industry_choices_lists:
+            career_value = choice[0]
+            career_label = choice[1]
+            
+            industry_value = choice[2]
+            industry_label = choice[3]
+                        
+            studypref_value = choice[4]
+            studypref_label = choice[5]
+                        
+            studydays_value = choice[6]
+            studydays_label = choice[7]
+            
+            careers.append({"value":career_value,"label":career_label})
+            industrys.append({"value":industry_value,"label":industry_label})
+            studyprefs.append({"value":studypref_value,"label":studypref_label})
+            studydays.append({"value":studydays_value,"label":studydays_label})
+        return {"careers":careers,"industrys":industrys,"studyprefs":studyprefs,"studydays":studydays} 
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
 # Storing Interest entities
 @app.post('/api/v1/storeindustryentity') # POST
 async def storeindustryentity(industry_model: IndustryModel): # ,authorization: str = Header(None)
