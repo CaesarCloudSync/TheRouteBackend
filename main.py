@@ -14,6 +14,7 @@ from CaesarJWT.caesarjwt import CaesarJWT
 from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
 from Models.AuthModels import SignupAuthModel,LoginAuthModel
 from Models.InterestsModels import IndustryInterestsModel,IndustryModel,CareerModel,StudyDaysModel,StudyPrefModel
+from iteration_utilities import unique_everseen
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(
@@ -112,10 +113,11 @@ async def storeinterests(industry_interests: IndustryInterestsModel,authorizatio
         if user_exists:
             user_interests_exists = caesarcrud.check_exists(("*"),"users_interests",condition=f"uuid = '{current_user}'")
             if user_interests_exists:
-                return {"message":"user interest already exists"}
+                return {"error":"user interest already exists"}
             else:
+                users_interests_uuid = str(uuid.uuid4())
                 career_uuid,industry_uuid,studypref_uuid,studyday_uuid= caesarcrud.caesarsql.run_command(f"SELECT careers.career_uuid,industrys.industry_uuid,studypreferences.studypref_uuid,studydays.studyday_uuid FROM careers,industrys,studypreferences,studydays WHERE careers.career = '{career}' AND industrys.industry = '{industry}' AND studypreferences.studypref = '{studypref}' AND studydays.studyday = '{studydays}';",result_function=caesarcrud.caesarsql.fetch)[0]
-                caesarcrud.caesarsql.run_command(f"INSERT INTO users_interests (uuid,career_uuid,industry_uuid,studypref_uuid,studyday_uuid) VALUES ('{current_user}','{career_uuid}','{industry_uuid}','{studypref_uuid}','{studyday_uuid}');")
+                caesarcrud.caesarsql.run_command(f"INSERT INTO users_interests (users_interests_uuid,uuid,career_uuid,industry_uuid,studypref_uuid,studyday_uuid) VALUES ('{users_interests_uuid}','{current_user}','{career_uuid}','{industry_uuid}','{studypref_uuid}','{studyday_uuid}');")
                 return {'message':'user interests stored.'}
 
     except Exception as ex:
@@ -147,7 +149,27 @@ async def getindustrychoices():
             industrys.append({"value":industry_value,"label":industry_label})
             studyprefs.append({"value":studypref_value,"label":studypref_label})
             studydays.append({"value":studydays_value,"label":studydays_label})
-        return {"careers":careers,"industrys":industrys,"studyprefs":studyprefs,"studydays":studydays} 
+        career_choices = {}
+
+        # Iterate over each item in the input data
+        for item in careers:
+            # Get the industry of the current item
+            industry = item['industry']
+            
+            # Create the industry key in the output dictionary if it doesn't already exist
+            if industry not in career_choices:
+                career_choices[industry] = []
+            
+            # Create a new dictionary with 'label' and 'value' keys
+            new_item = {
+                'label': item['label'],
+                'value': item['value']
+            }
+            
+            # Append the new dictionary to the list corresponding to the industry key
+            career_choices[industry].append(new_item)
+        print()
+        return {"careers":career_choices,"industrys":list(unique_everseen(industrys)),"studyprefs":list(unique_everseen(studyprefs)),"studydays":list(unique_everseen(studydays))} 
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
 # Storing Interest entities

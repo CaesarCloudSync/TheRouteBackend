@@ -39,6 +39,7 @@ class CaesarCreateTables:
                 );
                                              
             CREATE TABLE IF NOT EXISTS users_interests (
+                users_interests_uuid UUID NOT NULL PRIMARY KEY, 
                 uuid UUID REFERENCES users(uuid) NOT NULL,
                 industry_uuid UUID REFERENCES industrys(industry_uuid) NOT NULL,
                 career_uuid UUID REFERENCES careers(career_uuid) NOT NULL,

@@ -5,6 +5,7 @@ class IndustryInterestsModel(BaseModel):
     career:str
     studypref:str
     studydays:str
+    # {"industry":"tech","career":"software_developer","studypref":"online","studydays":"3_days_week"}
 
 class IndustryModel(BaseModel):
     industry:str
