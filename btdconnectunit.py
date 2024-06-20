@@ -34,8 +34,12 @@ class BTDConnectUnittest(unittest.TestCase):
     def test_insert_industrys_careers_studydays_studyprefs(self):
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"tech","label":"Technology"})
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"gaming","label":"Gaming"})
+        response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"finance","label":"Finance"})
 
+        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"accountant","label":"Accountant","industry":"finance"})
+        
 
+        print(response.json())
         print(response.json())
         response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"software_developer","label":"Software Developer","industry":"tech"})
         
@@ -79,7 +83,7 @@ class BTDConnectUnittest(unittest.TestCase):
         "career":"game_developer",
         "link": "https://croydon.ac.uk/",
         "description":qual_info.qual_description,
-        "qual_icon": "https://qual_icon",
+        "qual_icon": "https://www.blast.co.uk/wp-content/uploads/blast_design_croydoncollege_Identity_print_2a.jpg",
         "institution": "Croydon College",
         "online_freq": "2_days_a_week",
         "online_freq_label": "2 days a week",
@@ -90,16 +94,17 @@ class BTDConnectUnittest(unittest.TestCase):
         "earning_potential_lower": "60k",
         "earning_potential_upper": "180K",
         "earning_potential_description": "no experience needed",
-        "qual_image":"https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/home-improvement/wp-content/uploads/2022/07/Paris_Exterior_4-Edit-e1714649473120.png"
+        "qual_image":"https://feweek.co.uk/wp-content/uploads/2016/11/p5-Croydon-College.jpg"
     })
         print(response.json())
+
         response = requests.post(f"{uri}/api/v1/storequalification",json={
                 "qual_name": "Game Designer",
                 "industry":"gaming",
                 "career":"game_designer",
                 "link": "https://www.universitygames.com/",
                 "description":qual_info.qual_description,
-                "qual_icon": "https://qual_icon",
+                "qual_icon": "https://cdn.vox-cdn.com/thumbor/JPRYCY0yKtFT9ccqUcVoeiXvwTk=/150x0:1770x1080/920x613/filters:focal(150x0:1770x1080):format(webp)/cdn.vox-cdn.com/uploads/chorus_image/image/45700578/twitch.0.0.jpg",
                 "institution": "GAMES ARE US",
                 "online_freq": "4_days_a_week",
                 "online_freq_label": "4 days a week",
@@ -112,6 +117,53 @@ class BTDConnectUnittest(unittest.TestCase):
                 "earning_potential_description": "3 months training provided before job offer",
                 "qual_image":"https://jkeducate.b-cdn.net/content/uploads/2024/05/classroom-2093744_1920.jpg"
             })
+        response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"LSE University"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storequalification",json={
+        "qual_name": "BSE Economics",
+        "industry":"finance",
+        "career":"accountant",
+        "link": "https://www.lse.ac.uk/",
+        "description":qual_info.qual_description,
+        "qual_icon": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/LSE_Logo.svg/319px-LSE_Logo.svg.png?20110331145302",
+        "institution": "LSE University",
+        "online_freq": "1_days_a_week",
+        "online_freq_label": "1 days a week",
+        "in_person_freq": "4_day_a week",
+        "in_person_freq_label": "4 day a week",
+        "course_length": "4_years",
+        "course_length_label": "4 Years Study",
+        "earning_potential_lower": "90k",
+        "earning_potential_upper": "140K",
+        "earning_potential_description": "no experience needed",
+        "qual_image":"https://www.goodenough.ac.uk/wp-content/uploads/2021/03/london-school-of-economics-glance-1.jpg"
+    })
+        
+        response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"Oxford University"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storequalification",json={
+        "qual_name": "AI BSC Degree",
+        "industry":"finance",
+        "career":"software_developer",
+        "link": "https://www.ox.ac.uk/",
+        "description":qual_info.qual_description,
+        "qual_icon": "https://i0.wp.com/oxforduniversitytours.co.uk/wp-content/uploads/2023/09/university-of-oxford-logo-1.png?resize=300%2C300&ssl=1",
+        "institution": "Oxford University",
+        "online_freq": "1_days_a_week",
+        "online_freq_label": "1 days a week",
+        "in_person_freq": "4_day_a week",
+        "in_person_freq_label": "4 day a week",
+        "course_length": "4_years",
+        "course_length_label": "4 Years Study",
+        "earning_potential_lower": "150k",
+        "earning_potential_upper": "200K",
+        "earning_potential_description": "no experience needed",
+        "qual_image":"https://cdn.britannica.com/03/117103-050-F4C2FC83/view-University-of-Oxford-England-Oxfordshire.jpg?w=400&h=300&c=crop"
+    })
         print(response.json())
         response = requests.get(f"{uri}/api/v1/getqualifications?page=1")
         #print(response.json())
