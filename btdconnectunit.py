@@ -182,11 +182,19 @@ class BTDConnectUnittest(unittest.TestCase):
         #headers = {"Authorization": f"Bearer {access_token}"}
         #response = requests.get(f"{uri}/api/v1/getuserinterests",headers=headers)
         #print(response.json())
-        with open("UnittestData/Qualifications.json") as f:
-            qualifications = json.load(f)
-        for qual in qualifications:
-            create_qualification(qual,qual_info)
-            time.sleep(1)
+        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
+        print(response.json())
+        access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {access_token}"}
+        #response = requests.get(f"{uri}/api/v1/getbookmarkedqualifications",headers=headers)
+        #print(response.json())
+        response = requests.get(f"{uri}/api/v1/getuserinterestqualifications",params={"offset":8},headers=headers)
+        print(response.json())
+        #with open("UnittestData/Qualifications.json") as f:
+        #    qualifications = json.load(f)
+        #for qual in qualifications:
+        #    create_qualification(qual,qual_info)
+        #    time.sleep(1)
             
 
 

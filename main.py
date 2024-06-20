@@ -340,21 +340,7 @@ async def storequalification(qualification_model: QualificationModel): # ,author
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
-@app.get('/api/v1/getuserinterestqualifications') # POST
-async def getuserinterestqualifications(page:int): # ,authorization: str = Header(None)
-    # Login API
-    try:
-        page = page - 1
-        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {page};",result_function=caesarcrud.caesarsql.fetch)
-        #print("hello",res)
-        if len(res) != 0:
-            qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
-            return {"qualifications":qualifications}
-        else:
-            return {"error":"no qualifications exist in the database."}
-    except Exception as ex:
-         print(ex)
-         return {"error": f"{type(ex)} {str(ex)}"}
+
 @app.get('/api/v1/getqualifications') # POST
 async def getqualifications(offset:int): # ,authorization: str = Header(None)
     # Login API
@@ -362,6 +348,52 @@ async def getqualifications(offset:int): # ,authorization: str = Header(None)
         offset = offset- 1
         res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
         #print("hello",res)
+        if len(res) != 0:
+            qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
+            return {"qualifications":qualifications}
+        else:
+            if offset <= 8:
+                return {"error":"no qualifications exist in the database."}
+            else:
+                return {"offsetend":"true"}
+            
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getuserinterestqualifications') # POST
+async def getuserinterestqualifications(offset:int,authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        offset = offset- 1
+        res = caesarcrud.caesarsql.run_command(f"""
+        SELECT 
+        qualifications.qual_uuid ,
+        qualifications.qual_name,
+        qualifications.industry,
+        qualifications.career,
+        qualifications.link ,
+        qualifications.description,
+        qualifications.qual_icon,
+        qualifications.institution,
+        qualifications.online_freq,
+        qualifications.online_freq_label,
+        qualifications.in_person_freq,
+        qualifications.in_person_freq_label,          
+        qualifications.course_length, 
+        qualifications.course_length_label,
+        qualifications.earning_potential_lower,
+        qualifications.earning_potential_upper,
+        qualifications.earning_potential_description,
+        qualifications.qual_image
+
+        FROM careers
+        INNER JOIN users_interests ON users_interests.career_uuid = careers.career_uuid
+        INNER JOIN qualifications ON qualifications.career= careers.career
+    
+        WHERE users_interests.uuid = '{current_user}';                               
+        """,result_function=caesarcrud.caesarsql.fetch) # LIMIT 8 OFFSET {offset};
+        print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
             return {"qualifications":qualifications}
@@ -412,6 +444,63 @@ async def storequalificationbookmark(qual_uuid_model:StoreQualificationBookMarkM
             qualbookmark_uuid = str(uuid.uuid4())
             caesarcrud.post_data(("qualbookmark_uuid","uuid","qual_uuid"),(qualbookmark_uuid,current_user,qual_uuid),"qualbookmarks")
             return {"message":"qualification was inserted."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.delete('/api/v1/removequalificationbookmark') # POST
+async def removequalificationbookmark(qual_uuid:str,authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        qual_bookmark_exists =caesarcrud.check_exists(("*"),"qualbookmarks",condition=f"uuid = '{current_user}' AND qual_uuid = '{qual_uuid}'")
+        if qual_bookmark_exists:
+            caesarcrud.delete_data("qualbookmarks",f"uuid = '{current_user}' AND qual_uuid = '{qual_uuid}'")
+            return {"message":"qualification bookmark was removed"}
+        else:
+
+            return {"error":"qualification does not exist in bookmark."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getbookmarkedqualifications') # POST
+async def getbookmarkedqualifications(authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        qualbookmarks_exists = caesarcrud.check_exists(("*"),"qualbookmarks",condition=f"uuid = '{current_user}'")
+        if qualbookmarks_exists:
+            res = caesarcrud.caesarsql.run_command(f"""
+            SELECT 
+            qualifications.qual_uuid ,
+            qualifications.qual_name,
+            qualifications.industry,
+            qualifications.career,
+            qualifications.link ,
+            qualifications.description,
+            qualifications.qual_icon,
+            qualifications.institution,
+            qualifications.online_freq,
+            qualifications.online_freq_label,
+            qualifications.in_person_freq,
+            qualifications.in_person_freq_label,          
+            qualifications.course_length, 
+            qualifications.course_length_label,
+            qualifications.earning_potential_lower,
+            qualifications.earning_potential_upper,
+            qualifications.earning_potential_description,
+            qualifications.qual_image
+
+            FROM qualifications
+            INNER JOIN qualbookmarks ON qualbookmarks.qual_uuid = qualifications.qual_uuid
+      
+            WHERE qualbookmarks.uuid = '{current_user}';
+    """,result_function=caesarcrud.caesarsql.fetch)
+            
+            quals_bookmarked = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
+            return {"qual_bookmarks":quals_bookmarked}
+        else:
+            return {"nobookmarks":"no book marks"}
+
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
