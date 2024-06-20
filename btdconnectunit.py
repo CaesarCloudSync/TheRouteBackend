@@ -114,6 +114,12 @@ class BTDConnectUnittest(unittest.TestCase):
             })
         print(response.json())
         response = requests.get(f"{uri}/api/v1/getqualifications?page=1")
+        #print(response.json())
+        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
+        #print(response.json())
+        access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get(f"{uri}/api/v1/getuserinterests",headers=headers)
         print(response.json())
 
 

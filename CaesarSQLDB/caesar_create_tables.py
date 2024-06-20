@@ -91,6 +91,7 @@ class CaesarCreateTables:
                 CONSTRAINT qual_name_unique UNIQUE (qual_name)
                                              
             );
+        
                 
             """)
 

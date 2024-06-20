@@ -15,6 +15,7 @@ from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
 from Models.AuthModels import SignupAuthModel,LoginAuthModel
 from Models.InterestsModels import IndustryInterestsModel,IndustryModel,CareerModel,StudyDaysModel,StudyPrefModel
 from Models.QualificationModel import QualificationModel,InstitutionModel
+from SQLQueries.sqlqueries import UserInterests
 from iteration_utilities import unique_everseen
 load_dotenv(".env")
 app = FastAPI()
@@ -338,6 +339,21 @@ async def storequalification(qualification_model: QualificationModel): # ,author
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getuserinterestqualifications') # POST
+async def getuserinterestqualifications(page:int): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        page = page - 1
+        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {page};",result_function=caesarcrud.caesarsql.fetch)
+        #print("hello",res)
+        if len(res) != 0:
+            qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
+            return {"qualifications":qualifications}
+        else:
+            return {"error":"no qualifications exist in the database."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
 @app.get('/api/v1/getqualifications') # POST
 async def getqualifications(page:int): # ,authorization: str = Header(None)
     # Login API
@@ -350,6 +366,30 @@ async def getqualifications(page:int): # ,authorization: str = Header(None)
             return {"qualifications":qualifications}
         else:
             return {"error":"no qualifications exist in the database."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getuserinterests') # POST
+async def getuserinterests(authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        userintsql = UserInterests()
+        res = caesarcrud.caesarsql.run_command(userintsql.getuserinterests(current_user),result_function=caesarcrud.caesarsql.fetch)
+        if len(res) != res:
+            user_interests = caesarcrud.tuple_to_json(("users_interests_uuid","email",
+            "industry",
+            "industry_label",
+            "career",
+            "careers_label",
+            "studypref",
+            "studypref_label",
+            "studyday",
+            "studydays_label"),res)[0]
+            return user_interests
+        else:
+            return {"error":"user interest does not exist."}
+        print(res)
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
