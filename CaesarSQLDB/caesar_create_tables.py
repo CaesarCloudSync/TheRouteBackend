@@ -16,7 +16,8 @@ class CaesarCreateTables:
                     "course_length_label",
                     "earning_potential_lower",
                     "earning_potential_upper",
-                    "earning_potential_description")
+                    "earning_potential_description",
+                    "qual_image")
     def create(self,caesarcrud :CaesarCRUD):
         try:
             caesarcrud.caesarsql.run_command("""
@@ -86,6 +87,7 @@ class CaesarCreateTables:
                 earning_potential_lower VARCHAR(255) NOT NULL, --  "60k"
                 earning_potential_upper VARCHAR(255) NOT NULL, --  "120k"
                 earning_potential_description VARCHAR(255) NOT NULL, -- "no experience needed"
+                qual_image VARCHAR(255) NOT NULL,
                 CONSTRAINT qual_name_unique UNIQUE (qual_name)
                                              
             );

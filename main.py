@@ -285,6 +285,7 @@ async def storequalification(qualification_model: QualificationModel): # ,author
         earning_potential_lower = qualification_model["earning_potential_lower"]
         earning_potential_upper = qualification_model["earning_potential_upper"]
         earning_potential_description = qualification_model["earning_potential_description"]
+        qual_image = qualification_model["qual_image"]
         condition = f"qual_name = '{qual_name}'"
         qualification_exists = caesarcrud.check_exists(("*"),"qualifications",condition=condition)
         if qualification_exists:
@@ -311,7 +312,8 @@ async def storequalification(qualification_model: QualificationModel): # ,author
                     course_length_label,
                     earning_potential_lower,
                     earning_potential_upper,
-                    earning_potential_description) VALUES ('{qual_uuid}','{qual_name}','{industry}','{career}',
+                    earning_potential_description,
+                    qual_image) VALUES ('{qual_uuid}','{qual_name}','{industry}','{career}',
                     '{link}',
                     '{description}',
                     '{qual_icon}',
@@ -324,7 +326,8 @@ async def storequalification(qualification_model: QualificationModel): # ,author
                     '{course_length_label}',
                     '{earning_potential_lower}',
                     '{earning_potential_upper}',
-                    '{earning_potential_description}');""")
+                    '{earning_potential_description}',
+                    '{qual_image}');""")
                 return {"message":"qualifcation was inserted."}
             else:
                 return {"error":"career does not exist."}

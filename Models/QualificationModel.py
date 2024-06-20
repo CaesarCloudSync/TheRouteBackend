@@ -19,3 +19,4 @@ class QualificationModel(BaseModel):
     earning_potential_lower:str
     earning_potential_upper:str
     earning_potential_description:str
+    qual_image:str
