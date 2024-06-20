@@ -344,6 +344,7 @@ async def getqualifications(page:int): # ,authorization: str = Header(None)
     try:
         page = page - 1
         res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {page};",result_function=caesarcrud.caesarsql.fetch)
+        print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
             return {"qualifications":qualifications}
