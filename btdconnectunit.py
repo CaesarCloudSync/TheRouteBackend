@@ -109,6 +109,8 @@ class BTDConnectUnittest(unittest.TestCase):
                 "earning_potential_description": "3 months training provided before job offer"
             })
         print(response.json())
+        response = requests.get(f"{uri}/api/v1/getqualifications?page=1")
+        print(response.json())
 
 
 

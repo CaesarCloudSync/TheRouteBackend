@@ -291,18 +291,14 @@ async def storequalification(qualification_model: QualificationModel): # ,author
             return {"message":"qualification already exists."}
         else:
             qual_uuid = str(uuid.uuid4())
-            industry_res = caesarcrud.caesarsql.run_command(f"SELECT industrys.industry_uuid FROM industrys WHERE industrys.industry = '{industry}'",result_function=caesarcrud.caesarsql.fetch)
-            if len(industry_res) == 0:
+            industry_exists = caesarcrud.check_exists(("*"),"industrys",condition=f"industry = '{industry}'")
+            if not industry_exists:
                 return {"error":"industry does not exist."}
-            
-            industry_uuid = caesarcrud.tuple_to_json(("industry",),industry_res)
-            career_res = caesarcrud.caesarsql.run_command(f"SELECT careers.career_uuid FROM careers WHERE careers.career = '{career}'",result_function=caesarcrud.caesarsql.fetch)
-            if len(career_res) != 0:
+
+            career_exists = caesarcrud.check_exists(("*"),"careers",condition=f"career = '{career}'")
+            if career_exists:
               
-                career_uuid = str(caesarcrud.tuple_to_json(("career",),career_res)[0]["career"])
-                industry_uuid = str(industry_uuid[0]["industry"])
-                print(industry_uuid)
-                res = caesarcrud.caesarsql.run_command(f"""INSERT INTO qualifications (qual_uuid,qual_name,industry_uuid,career_uuid,
+                res = caesarcrud.caesarsql.run_command(f"""INSERT INTO qualifications (qual_uuid,qual_name,industry,career,
                     link,
                     description,
                     qual_icon,
@@ -315,7 +311,7 @@ async def storequalification(qualification_model: QualificationModel): # ,author
                     course_length_label,
                     earning_potential_lower,
                     earning_potential_upper,
-                    earning_potential_description) VALUES ('{qual_uuid}','{qual_name}','{industry_uuid}','{career_uuid}',
+                    earning_potential_description) VALUES ('{qual_uuid}','{qual_name}','{industry}','{career}',
                     '{link}',
                     '{description}',
                     '{qual_icon}',
@@ -336,6 +332,20 @@ async def storequalification(qualification_model: QualificationModel): # ,author
             
             #res = caesarcrud.caesarsql.run_command(f"INSERT INTO studydays (studyday_uuid,studyday,label) VALUES ('{studydays_uuid}','{studydays}','{label}');")
        
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getqualifications') # POST
+async def getqualifications(page:int): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        page = page - 1
+        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {page};",result_function=caesarcrud.caesarsql.fetch)
+        if len(res) != 0:
+            qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
+            return {"qualifications":qualifications}
+        else:
+            return {"error":"no qualifications exist in the database."}
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}

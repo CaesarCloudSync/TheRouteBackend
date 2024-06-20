@@ -3,7 +3,20 @@ from psycopg import ProgrammingError
 import uuid
 class CaesarCreateTables:
     def __init__(self) -> None:
-        pass
+        self.qualifications_columns = ("qual_uuid","qual_name","industry","career",
+                    "link",
+                    "description",
+                    "qual_icon",
+                    "institution",
+                    "online_freq",
+                    "online_freq_label",
+                    "in_person_freq",
+                    "in_person_freq_label",            
+                    "course_length",
+                    "course_length_label",
+                    "earning_potential_lower",
+                    "earning_potential_upper",
+                    "earning_potential_description")
     def create(self,caesarcrud :CaesarCRUD):
         try:
             caesarcrud.caesarsql.run_command("""
@@ -25,7 +38,8 @@ class CaesarCreateTables:
                 career_uuid UUID NOT NULL PRIMARY KEY, 
                 career VARCHAR(255) NOT NULL,
                 label VARCHAR(255) NOT NULL,
-                industry VARCHAR(255) REFERENCES industrys(industry) NOT NULL
+                industry VARCHAR(255) REFERENCES industrys(industry) NOT NULL,
+                career VARCHAR(255) REFERENCES careers(career) NOT NULL
                 );
             CREATE TABLE IF NOT EXISTS studypreferences (
                 studypref_uuid UUID NOT NULL PRIMARY KEY, 
@@ -57,8 +71,8 @@ class CaesarCreateTables:
             CREATE TABLE IF NOT EXISTS qualifications(
                 qual_uuid UUID NOT NULL PRIMARY KEY,
                 qual_name VARCHAR(255),
-                industry_uuid UUID REFERENCES industrys(industry_uuid) NOT NULL,
-                career_uuid UUID REFERENCES careers(career_uuid),
+                industry VARCHAR(255) REFERENCES industrys(industry) NOT NULL,
+                career VARCHAR(255) REFERENCES careers(career),
                 link TEXT NOT NULL, -- "https://croydon.ac.uk/"
                 description TEXT NOT NULL,
                 qual_icon TEXT NOT NULL,
