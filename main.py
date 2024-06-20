@@ -288,7 +288,7 @@ async def storequalification(qualification_model: QualificationModel): # ,author
         earning_potential_upper = qualification_model["earning_potential_upper"]
         earning_potential_description = qualification_model["earning_potential_description"]
         qual_image = qualification_model["qual_image"]
-        condition = f"qual_name = '{qual_name}'"
+        condition = f"qual_name = '{qual_name}' AND institution = '{institution}'"
         qualification_exists = caesarcrud.check_exists(("*"),"qualifications",condition=condition)
         if qualification_exists:
             return {"message":"qualification already exists."}
@@ -356,17 +356,21 @@ async def getuserinterestqualifications(page:int): # ,authorization: str = Heade
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
 @app.get('/api/v1/getqualifications') # POST
-async def getqualifications(page:int): # ,authorization: str = Header(None)
+async def getqualifications(offset:int): # ,authorization: str = Header(None)
     # Login API
     try:
-        page = page - 1
-        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {page};",result_function=caesarcrud.caesarsql.fetch)
+        offset = offset- 1
+        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
         #print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
             return {"qualifications":qualifications}
         else:
-            return {"error":"no qualifications exist in the database."}
+            if offset <= 8:
+                return {"error":"no qualifications exist in the database."}
+            else:
+                return {"offsetend":"true"}
+            
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}

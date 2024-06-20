@@ -2,15 +2,16 @@ import json
 import requests
 import unittest
 import sys
+import time
 from UnittestData.QualificationsData import QualificationsInfo
 
 uri = "http://127.0.0.1:8080" #"https://btdtechconnectbe-hrjw5cc7pa-uc.a.run.app"
-def create_qualification(career_label,qualification):
-    qual_info = QualificationsInfo()
-    response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":qualification["career"],"label":career_label,"industry":qualification["industry"]})
+def create_qualification(qualification,qual_info):
+    response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":qualification["career"],"label":qualification["career"].replace("_"," ",100).title(),"industry":qualification["industry"]})
     print(response.json())
-    response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"LSE University"})
+    response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":qualification["institution"]})
     print(response.json())
+    qualification["description"] = qual_info.qual_description
     response = requests.post(f"{uri}/api/v1/storequalification",json=qualification)
     print(response.json())
     
@@ -155,7 +156,7 @@ class BTDConnectUnittest(unittest.TestCase):
         print(response.json())
         response = requests.post(f"{uri}/api/v1/storequalification",json={
         "qual_name": "AI BSC Degree",
-        "industry":"finance",
+        "industry":"tech",
         "career":"software_developer",
         "link": "https://www.ox.ac.uk/",
         "description":qual_info.qual_description,
@@ -173,18 +174,19 @@ class BTDConnectUnittest(unittest.TestCase):
         "qual_image":"https://cdn.britannica.com/03/117103-050-F4C2FC83/view-University-of-Oxford-England-Oxfordshire.jpg?w=400&h=300&c=crop"
     })
         print(response.json())
-        response = requests.get(f"{uri}/api/v1/getqualifications?page=1")
+        #response = requests.get(f"{uri}/api/v1/getqualifications?page=1")
         #print(response.json())
-        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
+        #response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
         #print(response.json())
-        access_token = response.json()["access_token"]
-        headers = {"Authorization": f"Bearer {access_token}"}
-        response = requests.get(f"{uri}/api/v1/getuserinterests",headers=headers)
-        print(response.json())
+        #access_token = response.json()["access_token"]
+        #headers = {"Authorization": f"Bearer {access_token}"}
+        #response = requests.get(f"{uri}/api/v1/getuserinterests",headers=headers)
+        #print(response.json())
         with open("UnittestData/Qualifications.json") as f:
             qualifications = json.load(f)
         for qual in qualifications:
-            create_qualification()
+            create_qualification(qual,qual_info)
+            time.sleep(1)
             
 
 
