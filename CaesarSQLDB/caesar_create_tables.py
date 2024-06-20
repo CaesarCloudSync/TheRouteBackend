@@ -47,6 +47,34 @@ class CaesarCreateTables:
                 studyday_uuid UUID REFERENCES studydays(studyday_uuid) NOT NULL
                                              
                     );
+            CREATE TABLE IF NOT EXISTS institutions(
+                institution_uuid UUID NOT NULL PRIMARY KEY,
+                institution VARCHAR NOT NULL,
+                CONSTRAINT institution_unique UNIQUE (institution)
+                
+                                             
+            );                          
+            CREATE TABLE IF NOT EXISTS qualifications(
+                qual_uuid UUID NOT NULL PRIMARY KEY,
+                qual_name VARCHAR(255),
+                industry_uuid UUID REFERENCES industrys(industry_uuid) NOT NULL,
+                career_uuid UUID REFERENCES careers(career_uuid),
+                link TEXT NOT NULL, -- "https://croydon.ac.uk/"
+                description TEXT NOT NULL,
+                qual_icon TEXT NOT NULL,
+                institution VARCHAR(255) REFERENCES institutions(institution) NOT NULL, -- Croydon College
+                online_freq VARCHAR(255) NOT NULL, -- "2_days_a_week"
+                online_freq_label VARCHAR(255) NOT NULL, -- "Online 2 days a week"
+                in_person_freq VARCHAR(255) NOT NULL, -- "1_day_a_week"
+                in_person_freq_label VARCHAR(255) NOT NULL, -- "In Person 1 day a week"             
+                course_length VARCHAR(255) NOT NULL, -- "2_years"
+                course_length_label VARCHAR(255) NOT NULL, -- "2 years study"
+                earning_potential_lower VARCHAR(255) NOT NULL, --  "60k"
+                earning_potential_upper VARCHAR(255) NOT NULL, --  "120k"
+                earning_potential_description VARCHAR(255) NOT NULL, -- "no experience needed"
+                CONSTRAINT qual_name_unique UNIQUE (qual_name)
+                                             
+            );
                 
             """)
 

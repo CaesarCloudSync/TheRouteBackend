@@ -14,6 +14,7 @@ from CaesarJWT.caesarjwt import CaesarJWT
 from CaesarSQLDB.caesar_create_tables import CaesarCreateTables
 from Models.AuthModels import SignupAuthModel,LoginAuthModel
 from Models.InterestsModels import IndustryInterestsModel,IndustryModel,CareerModel,StudyDaysModel,StudyPrefModel
+from Models.QualificationModel import QualificationModel,InstitutionModel
 from iteration_utilities import unique_everseen
 load_dotenv(".env")
 app = FastAPI()
@@ -242,6 +243,99 @@ async def storestudydayentity(studydays_model: StudyDaysModel): # ,authorization
             studydays_uuid = str(uuid.uuid4())
             res = caesarcrud.caesarsql.run_command(f"INSERT INTO studydays (studyday_uuid,studyday,label) VALUES ('{studydays_uuid}','{studydays}','{label}');")
             return {"message":"studyday was inserted."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storeinstitution') # POST
+async def storeinstitution(institution_model: InstitutionModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        institution_model = institution_model.model_dump()
+        institution = institution_model['institution']
+        condition = f"institution = '{institution}'"
+        institution_exists = caesarcrud.check_exists(("*"),"institutions",condition=condition)
+        if institution_exists:
+            return {"message":"institution already exists."}
+        else:
+            institution_uuid = str(uuid.uuid4())
+            res = caesarcrud.caesarsql.run_command(f"INSERT INTO institutions (institution_uuid,institution) VALUES ('{institution_uuid}','{institution}');")
+            return {"message":"institution was inserted."}
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+
+@app.post('/api/v1/storequalification') # POST
+async def storequalification(qualification_model: QualificationModel): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        qualification_model = qualification_model.model_dump()
+        qual_name = qualification_model['qual_name']
+        industry = qualification_model['industry']
+        career = qualification_model['career']
+        link = qualification_model['link']
+        description = qualification_model['description']
+        qual_icon = qualification_model['qual_icon']
+        institution = qualification_model['institution']
+        online_freq = qualification_model["online_freq"]
+        online_freq_label = qualification_model["online_freq_label"]
+        in_person_freq = qualification_model["in_person_freq"]
+        in_person_freq_label = qualification_model["in_person_freq_label"]          
+        course_length = qualification_model["course_length"]
+        course_length_label = qualification_model["course_length_label"]
+        earning_potential_lower = qualification_model["earning_potential_lower"]
+        earning_potential_upper = qualification_model["earning_potential_upper"]
+        earning_potential_description = qualification_model["earning_potential_description"]
+        condition = f"qual_name = '{qual_name}'"
+        qualification_exists = caesarcrud.check_exists(("*"),"qualifications",condition=condition)
+        if qualification_exists:
+            return {"message":"qualification already exists."}
+        else:
+            qual_uuid = str(uuid.uuid4())
+            industry_res = caesarcrud.caesarsql.run_command(f"SELECT industrys.industry_uuid FROM industrys WHERE industrys.industry = '{industry}'",result_function=caesarcrud.caesarsql.fetch)
+            if len(industry_res) == 0:
+                return {"error":"industry does not exist."}
+            
+            industry_uuid = caesarcrud.tuple_to_json(("industry",),industry_res)
+            career_res = caesarcrud.caesarsql.run_command(f"SELECT careers.career_uuid FROM careers WHERE careers.career = '{career}'",result_function=caesarcrud.caesarsql.fetch)
+            if len(career_res) != 0:
+              
+                career_uuid = str(caesarcrud.tuple_to_json(("career",),career_res)[0]["career"])
+                industry_uuid = str(industry_uuid[0]["industry"])
+                print(industry_uuid)
+                res = caesarcrud.caesarsql.run_command(f"""INSERT INTO qualifications (qual_uuid,qual_name,industry_uuid,career_uuid,
+                    link,
+                    description,
+                    qual_icon,
+                    institution,
+                    online_freq,
+                    online_freq_label,
+                    in_person_freq,
+                    in_person_freq_label,            
+                    course_length,
+                    course_length_label,
+                    earning_potential_lower,
+                    earning_potential_upper,
+                    earning_potential_description) VALUES ('{qual_uuid}','{qual_name}','{industry_uuid}','{career_uuid}',
+                    '{link}',
+                    '{description}',
+                    '{qual_icon}',
+                    '{institution}',
+                    '{online_freq}',
+                    '{online_freq_label}',
+                    '{in_person_freq}',
+                    '{in_person_freq_label}',            
+                    '{course_length}',
+                    '{course_length_label}',
+                    '{earning_potential_lower}',
+                    '{earning_potential_upper}',
+                    '{earning_potential_description}');""")
+                return {"message":"qualifcation was inserted."}
+            else:
+                return {"error":"career does not exist."}
+                # insert new career here then insert data
+            
+            #res = caesarcrud.caesarsql.run_command(f"INSERT INTO studydays (studyday_uuid,studyday,label) VALUES ('{studydays_uuid}','{studydays}','{label}');")
+       
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}

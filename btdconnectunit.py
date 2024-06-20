@@ -59,6 +59,56 @@ class BTDConnectUnittest(unittest.TestCase):
         
 
         print(response.json())
+        response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"Croydon College"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"GAMES ARE US"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":"game_designer","label":"Game Designer","industry":"gaming"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storequalification",json={
+        "qual_name": "Game Development",
+        "industry":"gaming",
+        "career":"game_developer",
+        "link": "https://croydon.ac.uk/",
+        "description":"Hello Game Developer",
+        "qual_icon": "https://qual_icon",
+        "institution": "Croydon College",
+        "online_freq": "2_days_a_week",
+        "online_freq_label": "Online 2 days a week",
+        "in_person_freq": "1_day_a week",
+        "in_person_freq_label": "In Person 1 day a week",
+        "course_length": "2_years",
+        "course_length_label": "2 Years Study",
+        "earning_potential_lower": "60k",
+        "earning_potential_upper": "180K",
+        "earning_potential_description": "no experience needed"
+    })
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storequalification",json={
+                "qual_name": "Game Designer",
+                "industry":"gaming",
+                "career":"game_designer",
+                "link": "https://www.universitygames.com/",
+                "description":"Hello Game Designer",
+                "qual_icon": "https://qual_icon",
+                "institution": "GAMES ARE US",
+                "online_freq": "4_days_a_week",
+                "online_freq_label": "Online 4 days a week",
+                "in_person_freq": "",
+                "in_person_freq_label":"",
+                "course_length": "18_months", 
+                "course_length_label":"18 Months Study",
+                "earning_potential_lower": "75k",
+                "earning_potential_upper": "120K",
+                "earning_potential_description": "3 months training provided before job offer"
+            })
+        print(response.json())
 
 
 
