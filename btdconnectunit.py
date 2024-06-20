@@ -5,7 +5,15 @@ import sys
 from UnittestData.QualificationsData import QualificationsInfo
 
 uri = "http://127.0.0.1:8080" #"https://btdtechconnectbe-hrjw5cc7pa-uc.a.run.app"
-
+def create_qualification(career_label,qualification):
+    qual_info = QualificationsInfo()
+    response = requests.post(f"{uri}/api/v1/storecareerentity",json={"career":qualification["career"],"label":career_label,"industry":qualification["industry"]})
+    print(response.json())
+    response = requests.post(f"{uri}/api/v1/storeinstitution",json={"institution":"LSE University"})
+    print(response.json())
+    response = requests.post(f"{uri}/api/v1/storequalification",json=qualification)
+    print(response.json())
+    
 class BTDConnectUnittest(unittest.TestCase):
     def test_signup(self):
         response = requests.post(f"{uri}/api/v1/signupapi",json={"first_name":"Amari","last_name":"Lawal","email":"amari.lawal@gmail.com","password":"test","date_of_birth":"2024-06-03"})
@@ -173,6 +181,11 @@ class BTDConnectUnittest(unittest.TestCase):
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.get(f"{uri}/api/v1/getuserinterests",headers=headers)
         print(response.json())
+        with open("UnittestData/Qualifications.json") as f:
+            qualifications = json.load(f)
+        for qual in qualifications:
+            create_qualification()
+            
 
 
 

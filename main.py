@@ -17,6 +17,7 @@ from Models.InterestsModels import IndustryInterestsModel,IndustryModel,CareerMo
 from Models.QualificationModel import QualificationModel,InstitutionModel
 from SQLQueries.sqlqueries import UserInterests
 from iteration_utilities import unique_everseen
+from Models.Bookmarks import StoreQualificationBookMarkModel
 load_dotenv(".env")
 app = FastAPI()
 app.add_middleware(
@@ -390,6 +391,23 @@ async def getuserinterests(authorization: str = Header(None)): # ,authorization:
         else:
             return {"error":"user interest does not exist."}
         print(res)
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
+@app.post('/api/v1/storequalificationbookmark') # POST
+async def storequalificationbookmark(qual_uuid_model:StoreQualificationBookMarkModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        qual_uuid_model = qual_uuid_model.model_dump()
+        qual_uuid = qual_uuid_model["qual_uuid"]
+        qual_bookmark_exists =caesarcrud.check_exists(("*"),"qualbookmarks",condition=f"uuid = '{current_user}' AND qual_uuid = '{qual_uuid}'")
+        if qual_bookmark_exists:
+            return {"message":"qualification bookmark already exists"}
+        else:
+            qualbookmark_uuid = str(uuid.uuid4())
+            caesarcrud.post_data(("qualbookmark_uuid","uuid","qual_uuid"),(qualbookmark_uuid,current_user,qual_uuid),"qualbookmarks")
+            return {"message":"qualification was inserted."}
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}

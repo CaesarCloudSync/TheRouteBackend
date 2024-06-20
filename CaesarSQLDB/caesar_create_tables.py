@@ -68,6 +68,13 @@ class CaesarCreateTables:
                 CONSTRAINT institution_unique UNIQUE (institution)
                 
                                              
+            );   
+            CREATE TABLE IF NOT EXISTS qualbookmarks(
+                qualbookmark_uuid UUID NOT NULL PRIMARY KEY,
+                uuid UUID REFERENCES users(uuid) NOT NULL,
+                qual_uuid UUID REFERENCES  qualifications(qual_uuid) NOT NULL
+                
+                                             
             );                          
             CREATE TABLE IF NOT EXISTS qualifications(
                 qual_uuid UUID NOT NULL PRIMARY KEY,
