@@ -195,7 +195,10 @@ class BTDConnectUnittest(unittest.TestCase):
         #for qual in qualifications:
         #    create_qualification(qual,qual_info)
         #    time.sleep(1)
-            
+    def test_search(self):
+        response = requests.get(f"{uri}/api/v1/searchqualifications",params={"offset":1,"text":"Ox"})
+        print(response.json())
+
 
 
 
