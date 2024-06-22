@@ -93,12 +93,13 @@ async def getuserinfo(authorization: str = Header(None)): # ,authorization: str 
         condition = f"uuid = '{current_user}'"
         user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
         if user_exists:
-            user_data = caesarcrud.get_data(("uuid","email"),"users",condition)[0]
+            user_data = caesarcrud.get_data(("email","first_name","last_name","date_of_birth"),"users",condition)[0]
             return user_data
         else:
             return {"error":"user does not exist."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
+
 # Store interests
 @app.post('/api/v1/storeuserinterests') # POST
 async def storeinterests(industry_interests: IndustryInterestsModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
