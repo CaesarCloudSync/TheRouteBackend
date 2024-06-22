@@ -99,7 +99,21 @@ async def getuserinfo(authorization: str = Header(None)): # ,authorization: str 
             return {"error":"user does not exist."}
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
-
+@app.delete('/api/v1/deleteuser') # POST
+async def deleteuser(authorization: str = Header(None)): # ,authorization: str = Header(None)
+    try:
+        current_user = btdjwt.secure_decode(authorization.replace("Bearer ",""))["uuid"]
+        condition = f"uuid = '{current_user}'"
+        user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
+        if user_exists:
+            pass
+            # TODO Delete
+            #user_data = caesarcrud.caesarsql.run_command("DELET")
+            #return user_data
+        else:
+            return {"error":"user does not exist."}
+    except Exception as ex:
+        return {"error": f"{type(ex)} {str(ex)}"}
 # Store interests
 @app.post('/api/v1/storeuserinterests') # POST
 async def storeinterests(industry_interests: IndustryInterestsModel,authorization: str = Header(None)): # ,authorization: str = Header(None)
