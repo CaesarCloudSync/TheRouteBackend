@@ -428,7 +428,7 @@ async def getuserinterestqualifications(offset:int,authorization: str = Header(N
     
         WHERE users_interests.uuid = '{current_user}';                               
         """,result_function=caesarcrud.caesarsql.fetch) # LIMIT 8 OFFSET {offset};
-        print("hello",res)
+        #print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
             return {"qualifications":qualifications}

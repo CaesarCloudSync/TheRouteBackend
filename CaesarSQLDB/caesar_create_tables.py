@@ -55,7 +55,7 @@ class CaesarCreateTables:
                                              
             CREATE TABLE IF NOT EXISTS users_interests (
                 users_interests_uuid UUID NOT NULL PRIMARY KEY, 
-                uuid UUID REFERENCES users(uuid) NOT NULL,
+                uuid UUID REFERENCES users(uuid) ON DELETE CASCADE NOT NULL,
                 industry_uuid UUID REFERENCES industrys(industry_uuid) NOT NULL,
                 career_uuid UUID REFERENCES careers(career_uuid) NOT NULL,
                 studypref_uuid UUID REFERENCES studypreferences(studypref_uuid) NOT NULL,
@@ -71,7 +71,7 @@ class CaesarCreateTables:
             );   
             CREATE TABLE IF NOT EXISTS qualbookmarks(
                 qualbookmark_uuid UUID NOT NULL PRIMARY KEY,
-                uuid UUID REFERENCES users(uuid) NOT NULL,
+                uuid UUID REFERENCES users(uuid) ON DELETE CASCADE NOT NULL,
                 qual_uuid UUID REFERENCES  qualifications(qual_uuid) NOT NULL
                 
                                              
