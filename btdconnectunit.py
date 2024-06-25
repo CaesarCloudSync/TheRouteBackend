@@ -198,7 +198,13 @@ class BTDConnectUnittest(unittest.TestCase):
     def test_search(self):
         response = requests.get(f"{uri}/api/v1/searchqualifications",params={"offset":1,"text":"Ox"})
         print(response.json())
-
+    def test_delete_user(self):
+        response = requests.post(f"{uri}/api/v1/loginapi",json={"email":"amari.lawal@gmail.com","password":"test"})
+        print(response.json())
+        access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.delete(f"{uri}/api/v1/deleteuser",headers=headers)
+        print(response.json())
 
 
 

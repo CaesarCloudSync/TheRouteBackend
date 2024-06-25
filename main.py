@@ -106,10 +106,10 @@ async def deleteuser(authorization: str = Header(None)): # ,authorization: str =
         condition = f"uuid = '{current_user}'"
         user_exists = caesarcrud.check_exists(("*"),"users",condition=condition)
         if user_exists:
-            pass
+            print("hello")
             # TODO Delete
-            #user_data = caesarcrud.caesarsql.run_command("DELET")
-            #return user_data
+            caesarcrud.delete_data("users",condition)
+            return {"message":"user was deleted."}
         else:
             return {"error":"user does not exist."}
     except Exception as ex:
