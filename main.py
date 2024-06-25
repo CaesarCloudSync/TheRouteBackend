@@ -170,6 +170,7 @@ async def getindustrychoices():
         career_choices = {}
 
         # Iterate over each item in the input data
+        industries = []
         for item in careers:
             # Get the industry of the current item
             industry = item['industry']
@@ -183,11 +184,19 @@ async def getindustrychoices():
                 'label': item['label'],
                 'value': item['value']
             }
-            
+            industries.append(industry)
             # Append the new dictionary to the list corresponding to the industry key
             career_choices[industry].append(new_item)
-        print()
-        return {"careers":career_choices,"industrys":list(unique_everseen(industrys)),"studyprefs":list(unique_everseen(studyprefs)),"studydays":list(unique_everseen(studydays))} 
+        final_career = {}
+        for industry in industries:
+            final_career[industry] = list(unique_everseen(career_choices[industry]))
+
+            
+            
+
+        #print(final_career)
+    
+        return {"careers":final_career,"industrys":list(unique_everseen(industrys)),"studyprefs":list(unique_everseen(studyprefs)),"studydays":list(unique_everseen(studydays))} 
     except Exception as ex:
         return {"error": f"{type(ex)} {str(ex)}"}
 # Storing Interest entities

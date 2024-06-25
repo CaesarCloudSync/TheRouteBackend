@@ -68,8 +68,24 @@ class BTDConnectUnittest(unittest.TestCase):
         
 
         print(response.json())
+        response = requests.post(f"{uri}/api/v1/storestudyprefentity",json={"studypref":"in_person","label":"In Person"})
+        
+
+        print(response.json())
 
         response = requests.post(f"{uri}/api/v1/storestudydayentity",json={"studydays":"3_days_week","label":"3 Days a week"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storestudydayentity",json={"studydays":"1_days_week","label":"1 Day a week"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storestudydayentity",json={"studydays":"5_days_week","label":"5 Days a week"})
+        
+
+        print(response.json())
+        response = requests.post(f"{uri}/api/v1/storestudydayentity",json={"studydays":"7_days_week","label":"7 Days a week"})
         
 
         print(response.json())
