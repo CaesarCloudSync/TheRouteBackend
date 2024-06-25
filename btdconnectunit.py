@@ -205,7 +205,15 @@ class BTDConnectUnittest(unittest.TestCase):
         headers = {"Authorization": f"Bearer {access_token}"}
         response = requests.delete(f"{uri}/api/v1/deleteuser",headers=headers)
         print(response.json())
-
+    def test_create_account(self):
+        signup_json = {"date_of_birth": "2024-06-25", "email": "amari.lawal@gmail.com", "first_name": "Amari", "last_name": "Lawal", "password": "test"}
+        interetsts_json = {"career": "software_developer", "industry": "tech", "studydays": "3_days_week", "studypref": "online"}
+        response = requests.post(f"{uri}/api/v1/signupapi",json=signup_json)
+        print(response.json())
+        access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.post("http://172.20.10.3:8080/api/v1/storeuserinterests",json=interetsts_json,headers=headers)
+        print(response.json())
 
 
 if __name__ == "__main__":
