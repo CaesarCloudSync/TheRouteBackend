@@ -405,21 +405,20 @@ async def getcareerfilter(offset:int): # ,authorization: str = Header(None)
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
 @app.get('/api/v1/searchqualifications') # POST
-async def searchqualifications(offset:int,text:str): # ,authorization: str = Header(None)
+async def searchqualifications(text:str): # ,authorization: str = Header(None)
     # Login API
     try:
-        offset = offset - 1
+        #offset = offset - 1
         #print(text)
-        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications WHERE qual_name ILIKE '%{text}%' OR institution ILIKE '%{text}%' LIMIT 8;",result_function=caesarcrud.caesarsql.fetch) # OFFSET {offset}
+        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications WHERE qual_name ILIKE '%{text}%' OR institution ILIKE '%{text}%' LIMIT 30;",result_function=caesarcrud.caesarsql.fetch) # OFFSET {offset}
         #print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
             return {"qualifications":qualifications}
         else:
-            if offset <= 8:
-                return {"error":"no qualifications exist in the database."}
-            else:
-                return {"offsetend":"true"}
+          
+            return {"error":"no qualifications exist in the database."}
+    
             
     except Exception as ex:
          print(ex)
