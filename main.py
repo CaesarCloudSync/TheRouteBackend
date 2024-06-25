@@ -4,7 +4,7 @@ import hashlib
 from dotenv import load_dotenv
 from fastapi import FastAPI, Header,Request,File, UploadFile,status,Form
 from fastapi.responses import StreamingResponse,FileResponse,Response
-from typing import Dict,List,Any,Union
+from typing import Dict,List,Any,Union,Optional
 from CaesarSQLDB.caesarcrud import CaesarCRUD
 from CaesarSQLDB.caesarhash import CaesarHash
 from fastapi.responses import StreamingResponse
@@ -385,12 +385,14 @@ async def getqualifications(offset:int): # ,authorization: str = Header(None)
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
 @app.get('/api/v1/getcareerfilter') # POST
-async def getcareerfilter(offset:int): # ,authorization: str = Header(None)
+async def getcareerfilter(offset:int,industry:Optional[str] = None): # ,authorization: str = Header(None)
     # Login API
     try:
         offset = offset- 1
-        res = caesarcrud.caesarsql.run_command(f"SELECT career,label,industry FROM careers LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
-       
+        if not industry:
+            res = caesarcrud.caesarsql.run_command(f"SELECT career,label,industry FROM careers LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
+        else:
+            res = caesarcrud.caesarsql.run_command(f"SELECT career,label,industry FROM careers WHERE industry = '{industry}' LIMIT 8 OFFSET {offset} ;",result_function=caesarcrud.caesarsql.fetch)
         if len(res) != 0:
             careers = caesarcrud.tuple_to_json(("career","label","industry"),res)
             print(careers)
