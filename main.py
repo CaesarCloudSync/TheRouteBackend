@@ -384,6 +384,26 @@ async def getqualifications(offset:int): # ,authorization: str = Header(None)
     except Exception as ex:
          print(ex)
          return {"error": f"{type(ex)} {str(ex)}"}
+@app.get('/api/v1/getcareerfilter') # POST
+async def getcareerfilter(offset:int): # ,authorization: str = Header(None)
+    # Login API
+    try:
+        offset = offset- 1
+        res = caesarcrud.caesarsql.run_command(f"SELECT career,label,industry FROM careers LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
+       
+        if len(res) != 0:
+            careers = caesarcrud.tuple_to_json(("career","label","industry"),res)
+            print(careers)
+            return {"filters":careers}
+        else:
+            if offset <= 8:
+                return {"error":"no qualifications exist in the database."}
+            else:
+                return {"offsetend":"true"}
+            
+    except Exception as ex:
+         print(ex)
+         return {"error": f"{type(ex)} {str(ex)}"}
 @app.get('/api/v1/searchqualifications') # POST
 async def searchqualifications(offset:int,text:str): # ,authorization: str = Header(None)
     # Login API

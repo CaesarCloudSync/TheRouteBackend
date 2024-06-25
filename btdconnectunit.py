@@ -40,6 +40,9 @@ class BTDConnectUnittest(unittest.TestCase):
     def test_get_industry_choices(self):
         response = requests.get(f"{uri}/api/v1/getindustrychoices")
         print(response.json())
+    def test_get_career_filter(self):
+        response = requests.get(f"{uri}/api/v1/getcareerfilter",params={"offset":1})
+        print(response.json())
     def test_insert_industrys_careers_studydays_studyprefs(self):
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"tech","label":"Technology"})
         response = requests.post(f"{uri}/api/v1/storeindustryentity",json={"industry":"gaming","label":"Gaming"})
