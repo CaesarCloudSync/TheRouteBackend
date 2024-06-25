@@ -410,7 +410,7 @@ async def searchqualifications(offset:int,text:str): # ,authorization: str = Hea
     try:
         offset = offset - 1
         #print(text)
-        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications WHERE qual_name ILIKE '%{text}%' OR institution ILIKE '%{text}%' LIMIT 8 OFFSET {offset};",result_function=caesarcrud.caesarsql.fetch)
+        res = caesarcrud.caesarsql.run_command(f"SELECT * FROM qualifications WHERE qual_name ILIKE '%{text}%' OR institution ILIKE '%{text}%' LIMIT 8;",result_function=caesarcrud.caesarsql.fetch) # OFFSET {offset}
         #print("hello",res)
         if len(res) != 0:
             qualifications = caesarcrud.tuple_to_json(caesarcreatetables.qualifications_columns,res)
