@@ -41,6 +41,11 @@ JSONStructure = Union[JSONArray, JSONObject]
 @app.get('/')# GET # allow all origins all methods.
 async def index():
     return "BTD Connect API."
+@app.post("/api/v1/wakeupdb")
+async def wakeupdb():
+    user = caesarcrud.get_data(("email",),"users",getamount=1)
+    return {"message":"database is awake."}
+
 @app.post('/api/v1/signupapi') # POST
 async def signup(data: SignupAuthModel):
     try:
