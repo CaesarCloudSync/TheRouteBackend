@@ -27,7 +27,7 @@ resource "google_cloud_run_service" "run_service" {
   template {
     spec {
       containers {
-        image = "palondomus/btdtechconnectbe:15"
+        image = "palondomus/btdtechconnectbe:16"
       }
     }
   }
